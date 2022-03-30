@@ -1,0 +1,100 @@
+<form *ngIf="localSettingsForm" [formGroup]="localSettingsForm">
+  <div class="filter-box">
+    <div class="filter-box__title">Filtros</div>
+    <div class="filter-box__body">
+      <ng-select
+        class="select2-custom filter-item"
+        [items]="bases"
+        bindValue="value"
+        formControlName="base"
+        [clearable]="false"
+      ></ng-select>
+      <ng-select
+        class="select2-custom filter-item"
+        [items]="setores_hosp"
+        formControlName="setor_hosp"
+        placeholder="Setor não selecionado"
+        loadingText="Carregando..."
+        [loading]="setores_hosp_loading"
+      ></ng-select>
+
+      <ng-select
+        class="select2-custom filter-item flex-grow-1"
+        [items]="unidades_atendimento"
+        [virtualScroll]="true"
+        formControlName="unidade_atendimento"
+        placeholder="Unidade não selecionada"
+        loadingText="Carregando..."
+        [loading]="unidades_atendimento_loading"
+      ></ng-select>
+      <ng-select
+        class="select2-custom filter-item flex-grow-1"
+        [items]="postos"
+        [virtualScroll]="true"
+        formControlName="posto"
+        placeholder="Posto não selecionado"
+        loadingText="Carregando..."
+        [loading]="postos_loading"
+      ></ng-select>
+
+      <button class="btn-default btn-primary btn-settings filter-item" [disabled]="!localSettingsForm?.valid" (click)="addToFilter()">Adicionar Posto</button>
+    </div>
+  </div>
+</form>
+
+<div class="added-filters">POSTOS ADICIONADOS</div>
+<div class="place-badges">
+    <span *ngFor="let local of searchedPostos;let i = index " [title]="local.unidade_atendimento.label" class="badge badge--primary">
+      {{ local.posto.label}} <i (click)="deleteFromList(i)" class="clickable ml-1 fas fa-times"></i>
+    </span>
+</div>
+<div class="default-box__body">
+  <table id="elegible" class="default-box__body--list">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Cod. Atendimento</th>
+        <th>Unidade</th>
+        <th>Posto</th>
+        <th>Dt. Nascimento</th>
+        <th>Dt. Alocação</th>
+        <th>Ultimo Monitoramento</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let elegible of elegibleList;let i = index ">
+        <td>{{elegible?.nome_paciente}}</td>
+        <td>{{elegible?.codigo_atendimento}}</td>
+        <td>{{elegible?.nome_filial}}</td>
+        <td>{{elegible?.nome_posto}}</td>
+        <td>{{(elegible?.data_nascimento | date: 'dd/MM/yyyy')}}</td>
+        <td>{{(elegible?.data_hora_ocupacao | date: 'dd/MM/yyyy - HH:mm')}}</td>
+        <td>{{
+            elegible?.last_monitoramento?.status === 'running' ?
+              'Em monitoramento' :
+              (elegible?.last_monitoramento?.timestamp | date: 'dd/MM/yyyy - HH:mm') || '-'
+            }}
+        </td>
+        <td class="text-center">
+          <button class="btn-default btn-finalizar" (click)="finalizarMonitoramento(elegible?.last_monitoramento?.id, i)"
+            *ngIf="elegible?.last_monitoramento?.status === 'running'" [disabled]='finalizarLoading.includes(true)'>
+            <i *ngIf='finalizarLoading[i]' class="fas fa-spinner fa-spin"></i>
+            Encerrar
+          </button>
+        </td>
+      </tr>
+      <tr *ngIf="!elegibleList?.length">
+        <td class="text-center" colspan="4">Não há gestantes elegíveis para os filtros informados</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="overlay" [ngClass]="{'overlay-show': loading}">
+    <div *ngIf="loading" class="lds-ring">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </div>
+</div>

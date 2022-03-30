@@ -1,0 +1,66 @@
+@import '../../assets/styles/colors';
+
+.wrapper {
+  position: relative;
+  // width: 1134px;  /** 30 min = 37.8 * 30 */
+  width: 100%;
+  height: 100%;
+
+  &.scrollable-x {
+    overflow-x: auto;
+  }
+
+  .maingraph {
+    display: block;
+  }
+
+  .interationgraph {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .label-x-wrapper {
+    position: relative;
+    display: block;
+    height: 13px;
+
+    .label-x {
+      position: absolute;
+      line-height: 1.1;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.4);
+      font-weight: bold;
+      border-left: 1px solid rgba(0, 0, 0, 0.4);
+      padding-left: 2px;
+    }
+  }
+
+  .lost-focus-message {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    right: 0;
+    font-size: 1.4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $lost-focus-message-color;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: inherit;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.15s linear;
+
+    &.show {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .fas {
+      font-size: 3rem;
+      margin-right: 15px;
+    }
+  }
+}

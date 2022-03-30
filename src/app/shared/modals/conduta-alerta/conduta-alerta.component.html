@@ -1,0 +1,118 @@
+<div class="default-box">
+  <div class="default-box__header">
+    <h1 class="default-box__header--subtitle">{{ periodoAlerta?.tipo_conduta.length > 0 || periodoAlerta?.conduta || periodoAlerta?.texto_outro ? 'VISUALIZAR': 'ADICIONAR' }} CONDUTA</h1>
+    <div class="custom-row">
+      <div class="custom-col">
+        <div class="info">
+          <span class="info__title">Paciente: &nbsp;</span>
+          <span class="info__value">{{ periodoAlerta?.paciente }}</span>
+        </div>
+      </div>
+      <div class="custom-col">
+        <div class="info">
+          <span class="info__title">Código Atendimento: &nbsp;</span>
+          <span class="info__value">{{ periodoAlerta?.monitoramento?.codigo_atendimento }}</span>
+        </div>
+      </div>
+      <div class="custom-col">
+        <div class="info">
+          <span class="info__title">Alerta: &nbsp;</span>
+          <span class="info__value">{{ periodoAlerta?.tipo_display }} ({{(periodoAlerta?.data_inicio | date: 'HH:mm:ss')}} - {{(periodoAlerta?.data_fim | date: 'HH:mm:ss')}})</span>
+        </div>
+      </div>
+      <div class="custom-col">
+        <div class="info">
+          <span class="info__title">Data Monitoramento: &nbsp;</span>
+          <span class="info__value">{{ periodoAlerta?.monitoramento?.timestamp | date: 'dd/MM/yyyy - HH:mm' }}</span>
+        </div>
+      </div>
+      <div *ngIf="periodoAlerta?.conduta || periodoAlerta?.tipo_conduta.length > 0 || periodoAlerta?.texto_outro" class="custom-col">
+        <span class="info__title">Profissional: &nbsp;</span>
+        <span class="info__value">{{ periodoAlerta?.nome_profissional || '-' }}</span>
+      </div>
+      <div *ngIf="periodoAlerta?.conduta || periodoAlerta?.tipo_conduta.length > 0 || periodoAlerta?.texto_outro" class="custom-col">
+        <span class="info__title">CRM: &nbsp;</span>
+        <span class="info__value">{{ periodoAlerta?.crm_profissional || '-' }}</span>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="periodoAlerta?.tipo_conduta.length == 0 && !periodoAlerta?.conduta && !periodoAlerta?.texto_outro" class="custom-row  mt-10">
+    <div class="custom-col flex-grow-1">
+      <div class="input-group filter-item">
+        <input placeholder="Digite o nome do profissional" [(ngModel)]="profissionalDisplay" [ngModelOptions]="{ standalone: true }" [typeahead]="profissionalOptions" [typeaheadMinLength]="1" [typeaheadScrollable]="true" [typeaheadOptionsLimit]="40" [typeaheadItemTemplate]="customItemTemplate" (typeaheadOnSelect)="typeaheadProfissionalOnSelect($event)" typeaheadOptionField="nome" class="form-control" />
+        <span *ngIf="profissionalDisplay" (click)="clearProfissionalName($event)" title="limpar" class="clear-filter-btn"><i class="fas fa-times"></i></span>
+        <div class="input-group-append">
+          <span *ngIf="!capturaBiometrica" class="input-group-text">
+            <i class="fa fa-search"></i>
+          </span>
+          <span *ngIf="capturaBiometrica" class="input-group-text">
+            <i class="fa fa-check-circle"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="biometriaError" class="custom-row">
+    <div class="custom-col custom-col--center">
+      <label class="error">Erro ao realizar autenticação biométrica</label>
+    </div>
+  </div>
+
+  <app-biometria *ngIf="profissionalSelected && !capturaBiometrica && !biometriaError" [profissional]="profissionalSelected" [contexto]="periodoAlerta?.monitoramento.contexto" (biometriaCaptured)="onBiometriaCaptured($event)" (biometriaLoading)="onBiometriaLoading($event)" (biometriaLoaded)="onBiometriaLoaded($event)" (biometriaClosed)="clearProfissionalName($event)" (biometriaError)="onBiometriaError($event)">
+  </app-biometria>
+
+  <form [formGroup]="condutaFormGroup" *ngIf="condutaFormGroup">
+    <div *ngIf="capturaBiometrica" class="default-box__body mt-10">
+      <div formArrayName="tipo_conduta" *ngFor="let choice of choices.results; let i = index;">
+        <div class="checkboxes">
+          <label class="check-box-wrapper">
+            <input (click)="onChoiceCheked($event)" [attr.disabled]="periodoAlerta.tipo_conduta.length > 0 ? 'disabled' : null" type="checkbox" [formControlName]="i" [value]="choice.codigo_conduta" class="mr-1">
+            <span>{{choice.descricao}}</span>
+          </label>
+        </div>
+      </div>
+
+      <textarea #textarea [ngClass]="{'set-height': !periodoAlerta?.conduta, 'set-color': textoOutroError}" (keydown)="onTextareaChange()" autofocus formControlName="texto_outro" *ngIf="selectedChoies.includes('outro')" placeholder="Digite a conduta realizada para o alerta" rows="10"></textarea>
+      <span *ngIf="textoOutroError" class="texto-outro-invalido">Texto Inválido, adicione um espaço após utilizar o caractere "<" </span>
+          <div *ngIf="!periodoAlerta?.conduta && periodoAlerta?.tipo_conduta.length == 0" class="custom-row mt-10 align-self-center">
+            <div class="custom-col custom-col--center">
+              <button [attr.disabled]="condutaFormGroup.valid && !selectedChoies.includes('outro') || condutaFormGroup.get('texto_outro').value ? null : 'disabled'" (click)="salvarConduta()" class="btn-default btn-primary btn-rounded">Adicionar</button>
+            </div>
+          </div>
+    </div>
+
+    <div *ngIf="periodoAlerta.tipo_conduta.length > 0 || periodoAlerta?.texto_outro" class="default-box__body mt-10">
+      <div formArrayName="tipo_conduta" *ngFor="let choice of choices.results; let i = index;">
+        <div class="checkboxes">
+          <label class="check-box-wrapper">
+            <input (click)="onChoiceCheked($event)" [attr.disabled]="periodoAlerta.tipo_conduta.length > 0 || periodoAlerta?.texto_outro? 'disabled' : null" type="checkbox" [formControlName]="i" [value]="choice.codigo_conduta" class="mr-1">
+            <span>{{choice.descricao}}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!biometriaLoaded && periodoAlerta?.tipo_conduta.length == 0 && !periodoAlerta?.conduta" class="default-box__body mt-10">
+      <textarea disabled="disabled" [value]="periodoAlerta?.texto_outro || null" placeholder="Para prosseguir com a conduta, autentique-se" rows="10"></textarea>
+    </div>
+
+    <div *ngIf="periodoAlerta?.texto_outro && periodoAlerta?.tipo_conduta.length > 0 || periodoAlerta?.conduta" class="default-box__body mt-10">
+      <textarea disabled="disabled" [value]="periodoAlerta?.texto_outro || periodoAlerta?.conduta" placeholder="Para prosseguir com a conduta, autentique-se" rows="10"></textarea>
+    </div>
+  </form>
+</div>
+
+
+<ng-template #customItemTemplate let-model="item" let-index="index">
+  <h6>{{ model.nome }}</h6>
+</ng-template>
+
+<div class="overlay" [ngClass]="{'overlay-show': loading}">
+  <div *ngIf="loading" class="lds-ring">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>

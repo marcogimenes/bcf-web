@@ -1,0 +1,30 @@
+.custom-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  .custom-col {
+    display: flex;
+
+    .info {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      &__title {
+        color: $primary-color;
+        font-size: 10pt;
+      }
+      &__value {
+        font-size: 10pt;
+      }
+    }
+
+    &--center{
+      justify-content: center;
+      &:last-child {
+        justify-content: center;
+      }
+    }
+  }
+}

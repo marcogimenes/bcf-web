@@ -1,0 +1,126 @@
+<div class="patient-detail-name">{{ (patient_data?.detalhes?.nome_usuario || patient_data?.nome) || patient?.nome || '-' }}</div>
+
+<div class="patient-data-detail-row">
+  <div class="patient-data">
+    <div class="patient-title">
+      Data de Nascimento
+    </div>
+    <div class="patient-value">
+      {{ (patient_data?.data_nascimento | date:'dd/MM/yyyy') || '-' }}
+    </div>
+  </div>
+  <div class="patient-data">
+    <div class="patient-title">
+      Quantidade de Abortos
+    </div>
+    <div class="patient-value">
+      {{ patient_data?.obstetricia?.numero_abortos !== null ? patient_data?.obstetricia?.numero_abortos : '-' }}
+    </div>
+  </div>
+  <div class="patient-data">
+    <div class="patient-title">
+      Diabetes?
+    </div>
+    <div class="patient-value">
+      {{ patient_data?.comorbidades?.diabetes | nullBooleanString }}
+    </div>
+  </div>
+  <div class="patient-data">
+    <div class="patient-title">
+      Hipertensão?
+    </div>
+    <div class="patient-value">
+      {{ patient_data?.comorbidades?.hipertensao | nullBooleanString }}
+    </div>
+  </div>
+  <div class="patient-data">
+    <div class="patient-title">
+      Cardiopatias?
+    </div>
+    <div class="patient-value">
+      {{ patient_data?.comorbidades?.cardiopatias | nullBooleanString }}
+    </div>
+  </div>
+</div>
+
+<div class="custom-row">
+  <div class="d-flex flex-row flex-fill">
+    <select [ngModel]="selected_monitoring" (ngModelChange)="onSelectChange($event)" placeholder="Selecione o monitoramento" class="form-control form-control-sm mb-2 w-25 mr-2">
+      <option [ngValue]="null" disabled selected>Não há monitoramentos</option>
+      <option [ngValue]="monitoring" *ngFor="let monitoring of patient_monitoring_list?.results">{{monitoring?.timestamp | date: 'dd/MM/yyyy - HH:mm'}} - {{monitoring?.id_senai ? 'SENAI': 'HERAMED'}}</option>
+    </select>
+    <div class="patient-data-detail-row ml-4">
+      <div class="patient-data">
+        <div class="patient-title">Tempo Total</div>
+        <div *ngIf="!loadingDuration; else loadingDurationValidComponent" class="patient-value">{{totalDuration ? (totalDuration | monitoramentoDuration) : '-'}}</div>
+
+      </div>
+      <div class="patient-data">
+        <div class="patient-title">Tempo Válido</div>
+        <div *ngIf="!loadingDuration; else loadingDurationValidComponent" class="patient-value">{{totalDurationValid  ? (totalDurationValid | monitoramentoDuration) : '-'}}</div>
+        <ng-template #loadingDurationValidComponent>
+          <i class="fas fa-circle-notch fa-spin"></i>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="selected_monitoring">
+    <div class="badge"
+        [ngClass]="
+          {'badge--success': selected_monitoring?.salvo_prontuario,
+           'badge--error': selected_monitoring?.salvo_prontuario == false,
+           'badge--info': selected_monitoring?.salvo_prontuario == null
+          }">
+      <i class="fas"
+        [ngClass]="
+          {'fa-check-circle': selected_monitoring?.salvo_prontuario,
+           'fa-times-circle': selected_monitoring?.salvo_prontuario == false,
+           'fa-info-circle': selected_monitoring?.salvo_prontuario == null
+          }">
+      </i>
+      <span *ngIf="selected_monitoring?.salvo_prontuario != null">{{ !selected_monitoring.salvo_prontuario ? 'Erro ao registrar': 'Registrado' }} no prontuário</span>
+      <span *ngIf="selected_monitoring?.salvo_prontuario == null">Não registrado no prontuário</span>
+    </div>
+  </div>
+</div>
+
+<div class="rt-graph-wrapper">
+  <app-fth-graph class="rt-graph" [is_real_time]="false" [view_is_loaded]="can_load_monitoramentos" [dataset]="patient_plot_data"></app-fth-graph>
+</div>
+
+<div *ngIf="selected_monitoring && !loading" class="patient-event-logging-box-wrapper">
+  <div class="patient-event-logging-box" [ngClass]="{'no-items': !patient_alerts_desaceleracao.length}">
+    <div class="no-data-message" *ngIf="!patient_alerts_desaceleracao.length">Não há alertas de desaceleração</div>
+    <div class="patient-event" *ngFor="let periodo_alerta of patient_alerts_desaceleracao">
+      <span class="event-title {{periodo_alerta?.tipo}}">{{ getAlertDisplay(periodo_alerta?.tipo) }}</span>: {{ periodo_alerta?.data_inicio | date:'HH:mm:ss' }} - {{ (periodo_alerta?.data_fim | date:'HH:mm:ss') || '...' }}
+    </div>
+  </div>
+  <div class="patient-event-logging-box" [ngClass]="{'no-items': !patient_alerts_bradicardia.length}">
+    <div class="no-data-message" *ngIf="!patient_alerts_bradicardia.length">Não há alertas de bradicardia</div>
+    <div class="patient-event" *ngFor="let periodo_alerta of patient_alerts_bradicardia">
+      <span class="event-title {{periodo_alerta?.tipo}}">{{ getAlertDisplay(periodo_alerta?.tipo) }}</span>: {{ periodo_alerta?.data_inicio | date:'HH:mm:ss' }} - {{ (periodo_alerta?.data_fim | date:'HH:mm:ss') || '...' }}
+    </div>
+  </div>
+  <div class="patient-event-logging-box" [ngClass]="{'no-items': !patient_alerts_taquicardia.length}">
+    <div class="no-data-message" *ngIf="!patient_alerts_taquicardia.length">Não há alertas de taquicardia</div>
+    <div class="patient-event" *ngFor="let periodo_alerta of patient_alerts_taquicardia">
+      <span class="event-title {{periodo_alerta?.tipo}}">{{ getAlertDisplay(periodo_alerta?.tipo) }}</span>: {{ periodo_alerta?.data_inicio | date:'HH:mm:ss' }} - {{ (periodo_alerta?.data_fim | date:'HH:mm:ss') || '...' }}
+    </div>
+  </div>
+  <div class="patient-event-logging-box" [ngClass]="{'no-items': !patient_alerts_ausencia_aceleracao_transitoria.length}">
+    <div class="no-data-message" *ngIf="!patient_alerts_ausencia_aceleracao_transitoria.length">Não há alertas de ausência de aceleração transitória</div>
+    <div class="patient-event" *ngFor="let periodo_alerta of patient_alerts_ausencia_aceleracao_transitoria">
+      <span class="event-title {{periodo_alerta?.tipo}}">{{ getAlertDisplay(periodo_alerta?.tipo) }}</span>: {{ periodo_alerta?.data_inicio | date:'HH:mm:ss' }} - {{ (periodo_alerta?.data_fim | date:'HH:mm:ss') || '...' }}
+    </div>
+  </div>
+</div>
+
+<div class="overlay" [ngClass]="{'overlay-show': loading}">
+  <div *ngIf="loading" class="lds-ring">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>

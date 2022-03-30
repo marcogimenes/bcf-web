@@ -1,0 +1,92 @@
+<app-loading-sala-controle *ngIf="loading; else detalhes" descricao="Carregando Relatórios">
+</app-loading-sala-controle>
+
+
+<ng-template #detalhes>
+
+  <form *ngIf="localSettingsForm" [formGroup]="localSettingsForm">
+    <div class="filter-box">
+      <div class="filter-box__body">
+        <div class="filter-box__row">
+          <div class="filter-box__item">
+            <span>Bases</span>
+            <ng-select class="select2-custom filter-item" [items]="bases" formControlName="base" placeholder="Base não selecionada" [clearable]="false"></ng-select>
+          </div>
+          <div class="filter-box__item">
+            <span>Setor</span>
+            <ng-select class="select2-custom filter-item" [items]="setores_hosp" formControlName="setor_hosp" placeholder="Setor não selecionado" loadingText="Carregando..." [loading]="setores_hosp_loading" [clearable]="false"></ng-select>
+          </div>
+          <div class="filter-box__item bigger_dropdown">
+            <span>Unidade</span>
+            <ng-select class="select2-custom" [items]="unidades_atendimento" [virtualScroll]="true" formControlName="unidade_atendimento" placeholder="Unidade não selecionada" loadingText="Carregando..." [loading]="unidades_atendimento_loading" [clearable]="false"></ng-select>
+          </div>
+          <div class="filter-box__item bigger_dropdown">
+            <span>Posto</span>
+            <ng-select class="select2-custom " [items]="postos" [virtualScroll]="true" formControlName="posto" placeholder="Posto não selecionado" loadingText="Carregando..." [loading]="postos_loading" [clearable]="false"></ng-select>
+          </div>
+          <button type="button" (click)="filtrar()" class="btn-default btn-primary align-self-center filter-box__button">
+            <i class="fas fa-filter mr-2"></i>Filtrar
+          </button>
+          <div class="update">
+            <span>Última atualização: {{time | date: "dd/MM/yyyy" }} às {{ time | date: "HH:mm"}}h</span>
+            <a title="Atualizar" (click)="update()" class="button-update"><i class="fas fa-redo-alt"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="registro-agenda-table-wrapper">
+    <div class="registro-agenda-table" infiniteScroll [infiniteScrollDistance]="0.5" [infiniteScrollThrottle]="50" [scrollWindow]="false" (scrolled)="onScroll()">
+      <table id="registroAgendaList" class="default-box__body--list">
+        <thead>
+          <tr>
+            <th>Unidade</th>
+            <th>Setor</th>
+            <th>Posto</th>
+            <th>Cód. Atend.</th>
+            <th>Gestante</th>
+            <th class="text-center">Atrasos</th>
+            <th class="text-center">Monit.</th>
+            <th class="text-center">Hora Aloc.</th>
+            <th class="text-center">Monit. Anterior</th>
+            <th class="text-center">Próximo Monit.</th>
+            <th class="text-center">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let registro of registrosAgenda" class="detalhes-table">
+            <td>{{registro?.nome_filial}}</td>
+            <td>{{getSetorCod(registro)}}</td>
+            <td>{{registro?.nome_posto}}</td>
+            <td>{{registro?.codigo_atendimento}}</td>
+            <td [title]="registro?.nome_paciente">{{registro?.nome_paciente}}</td>
+            <td class="text-center">{{registro?.atrasos}}</td>
+            <td class="text-center">{{registro?.monitoramentos}}</td>
+            <td>{{(registro?.hora_alocacao | date: 'HH:mm - dd/MM')}}</td>
+            <td>{{(registro?.ultimo_monitoramento | date: 'HH:mm - dd/MM')}}</td>
+            <td>{{(registro?.data_prevista_inicio | date: 'HH:mm - dd/MM')}}</td>
+            <div class="status" [ngClass]="registro?.data_prevista_inicio && {'late': registro?.status == 'late', 'on-time': registro?.status == 'on-time', 'on-tolerance': registro?.status == 'on-tolerance'}">
+              <td>{{timer(registro)}}</td>
+            </div>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <i *ngIf='spinnerLoading' class="fas fa-spinner fa-spin fa-2x align-self-center"></i>
+    <span class="no-list-items-message align-self-center" *ngIf="totalRegistros == 0 && !loading">Nenhum valor foi encontrado</span>
+    <div>
+      <div class="line"></div>
+      <div class="registro-agenda-legenda">
+        <b>Legenda: </b>
+        <span class="on-late"></span>
+        <p>Atrasados</p>
+        <span class="on-tolerancia"></span>
+        <p>Dentro da Tolerância</p>
+        <span class="on-time"></span>
+        <p>No prazo</p>
+      </div>
+    </div>
+  </div>
+
+</ng-template>

@@ -1,0 +1,119 @@
+<div class="content content-detail">
+  <div class="default-box">
+    <div class="default-box__header">
+      <h5>Alertas</h5>
+      <form *ngIf="local_settings_form" [formGroup]="local_settings_form">
+          <div class="filter-box">
+            <div class="filter-box__title">Filtros</div>
+              <div class="filter-box__body">
+                <ng-select
+                  class="select2-custom filter-item"
+                  [items]="bases"
+                  formControlName="base"
+                  [clearable]="false"
+                  bindValue="value"
+                >
+                </ng-select>
+
+                <ng-select
+                  class="select2-custom filter-item"
+                  [items]="setores_hosp"
+                  formControlName="setor_hosp"
+                  placeholder="Setor não selecionado"
+                  loadingText="Carregando..."
+                  [loading]="setores_hosp_loading"
+                >
+                </ng-select>
+
+                <ng-select
+                  class="select2-custom filter-item"
+                  [items]="unidades_atendimento"
+                  [virtualScroll]="true"
+                  formControlName="unidade_atendimento"
+                  placeholder="Unidade não selecionada"
+                  loadingText="Carregando..."
+                  [loading]="unidades_atendimento_loading"
+                >
+                </ng-select>
+
+                <ng-select
+                  class="select2-custom filter-item"
+                  [items]="postos"
+                  [virtualScroll]="true"
+                  formControlName="posto"
+                  placeholder="Posto não selecionado"
+                  loadingText="Carregando..."
+                  [loading]="postos_loading"
+                >
+                </ng-select>
+
+                <button class="button button__primary filter-item" (click)="performFilter()">Atualizar</button>
+              </div>
+          </div>
+        </form>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link clickable" [ngClass]="{'active': tab=='pendentes'}" (click)="changeTab('pendentes')" role="tab" aria-controls="alertasList" aria-selected="true">Pendentes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link clickable" [ngClass]="{'active': tab=='finalizados'}" (click)="changeTab('finalizados')" role="tab" aria-controls="alertasList" aria-selected="false">Finalizados</a>
+          </li>
+        </ul>
+    </div>
+    <div class="default-box__body">
+      <table id="alertasList" class="default-box__body--list">
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>Código do Atendimento</th>
+            <th>Unidade</th>
+            <th>Posto</th>
+            <th>Alerta</th>
+            <th>Data Monitoramento</th>
+            <th>Período (Início - Fim)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let periodoAlerta of periodosAlerta?.results">
+            <td>{{periodoAlerta?.paciente}}</td>
+            <td>{{periodoAlerta?.monitoramento?.codigo_atendimento}}</td>
+            <td>{{periodoAlerta?.monitoramento?.nome_filial}}</td>
+            <td>{{periodoAlerta?.monitoramento?.nome_posto}}</td>
+            <td>{{periodoAlerta?.tipo_display || '-'}}</td>
+            <td>{{(periodoAlerta?.monitoramento?.timestamp | date: 'dd/MM/yyyy - HH:mm')}}</td>
+            <td>{{(periodoAlerta?.data_inicio | date: 'HH:mm:ss')}} - {{(periodoAlerta?.data_fim | date: 'HH:mm:ss')}} </td>
+            <td class="action" (click)="openCondutaAlertaModal(periodoAlerta)">{{ periodoAlerta?.conduta || periodoAlerta?.tipo_conduta.length || periodoAlerta?.texto_outro ? 'Visualizar' : 'Adicionar' }} Conduta</td>
+          </tr>
+          <tr *ngIf="!periodosAlerta?.count">
+            <td class="text-center" colspan="4">Não há alertas para os filtros informados</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="overlay" [ngClass]="{'overlay-show': loading}">
+        <div *ngIf="loading" class="lds-ring">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+    <pagination
+      class="pagination-wrapper"
+      *ngIf="periodosAlerta?.count"
+      [boundaryLinks]="true"
+      [totalItems]="periodosAlerta?.count"
+      [rotate]="true" [maxSize]="7"
+      [itemsPerPage]="page_size"
+      [(ngModel)]="current_page"
+      (pageChanged)="pageChanged($event)"
+      previousText="&lsaquo;"
+      nextText="&rsaquo;"
+      firstText="&laquo;"
+      lastText="&raquo;"
+    >
+    </pagination>
+  </div>
+</div>

@@ -1,0 +1,51 @@
+<app-loading-sala-controle
+  *ngIf="loading; else graficos"
+   descricao="Carregando Gráficos"
+  >
+</app-loading-sala-controle>
+
+<ng-template #graficos>
+  <div class="totalizadores-hospitais">
+    <div class="box-totalizador">
+      <label>Todos os Hospitais</label>
+      <div *ngFor="let total of totalizadores" class="totalizador">
+        <div class="barra">
+          <span>{{total.description}}</span>
+          <progressbar [value]="total.percentage" type="{{total.type}}"></progressbar>
+        </div>
+        <span>{{total.value}}</span>
+      </div>
+    </div>
+    <span class="update-date">Última atualização: {{time | date: "dd/MM/yyyy" }} às {{ time | date: "HH:mm"}}h</span>
+  </div>
+  <div class="graficos">
+    <div class="boxes">
+        <div class="card-filial" *ngFor="let filial of filiais" routerLink="/dashboard/detalhes" [queryParams]="{codigo_filial: filial.codigo_filial}">
+          <h1 title="{{filial.nome_filial}}">{{filial.nome_filial}}</h1>
+          <div class="totalizador">
+            <div class="barra">
+              <span>Atrasados</span>
+              <progressbar [value]="getPorcentagem(filial.atrasados, totalizadoresGerais.atrasados)" type="danger"></progressbar>
+            </div>
+            <span>{{filial.atrasados}}</span>
+          </div>
+
+          <div class="totalizador">
+            <div class="barra">
+              <span>Na tolerância</span>
+              <progressbar [value]="getPorcentagem(filial.tolerancia, totalizadoresGerais.tolerancia)" type="warning"></progressbar>
+            </div>
+            <span>{{filial.tolerancia}}</span>
+          </div>
+
+          <div class="totalizador">
+            <div class="barra">
+              <span>No prazo</span>
+              <progressbar [value]="getPorcentagem(filial.prazo, totalizadoresGerais.prazo)" type="success"></progressbar>
+            </div>
+            <span>{{filial.prazo}}</span>
+          </div>
+        </div>
+    </div>
+  </div>
+</ng-template>

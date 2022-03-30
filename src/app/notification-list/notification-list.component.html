@@ -1,0 +1,113 @@
+<div class="content content-detail">
+  <div class="default-box">
+    <div class="default-box__header">
+      <h5>Notificações</h5>
+      <form [formGroup]="notificationForm">
+          <div class="filter-box">
+              <div class="filter-box__body">
+                <div class="filter-item">
+                  <span>Informe um periodo</span>
+                </div>
+                <input
+                  #dpr="bsDaterangepicker"
+                  bsDaterangepicker
+                  type="text"
+                  placeholder="Selecione um intervalo"
+                  formControlName="dateRange"
+                  class="form-control filter-item datepicker notification-date"
+                  [bsConfig]="{
+                    adaptivePosition: true,
+                    containerClass: 'theme-dark-blue',
+                    rangeInputFormat: 'DD/MM/YYYY',
+                    showWeekNumbers: false
+                  }"
+                />
+              <ng-select
+                class="select2-custom filter-item"
+                [items]="bases"
+                bindValue="value"
+                formControlName="base"
+                [clearable]="true"
+                placeholder="Base não selecionada"
+                >
+                </ng-select>
+              <ng-select
+                class="select2-custom filter-item"
+                [items]="setores_hosp"
+                [loading]="setores_hosp_loading"
+                formControlName="setor_hosp"
+                placeholder="Setor não selecionado"
+                >
+                </ng-select>
+              <ng-select
+                class="select2-custom filter-item"
+                [items]="unidades_atendimento"
+                [loading]="unidades_atendimento_loading"
+                [virtualScroll]="true"
+                formControlName="unidade_atendimento"
+                placeholder="Unidade não selecionada"
+                >
+                </ng-select>
+              <ng-select
+                class="select2-custom filter-item"
+                [items]="postos"
+                [loading]="postos_loading"
+                [virtualScroll]="true"
+                formControlName="posto"
+                placeholder="Posto não selecionado"
+                >
+                </ng-select>
+                <button class="button button__primary filter-item" (click)="performFilter()">Filtrar</button>
+              </div>
+          </div>
+        </form>
+    </div>
+
+    <div class="default-box__body">
+      <table class="default-box__body--list">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Unidade</th>
+            <th>Posto</th>
+            <th>Mensagem</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let notification of notificationList?.results">
+            <td>{{(notification?.data_criacao | date: 'dd/MM/yyyy - HH:mm')}}</td>
+            <td>{{notification?.nome_filial ? notification?.nome_filial : '-'}}</td>
+            <td>{{notification?.nome_posto ? notification?.nome_posto : '-'}}</td>
+            <td [innerHTML]="notification?.mensagem"></td>
+          </tr>
+          <tr *ngIf="!notificationList?.count">
+            <td class="text-center" colspan="4">Não há notificação para os filtros informados</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="overlay" [ngClass]="{'overlay-show': loading}">
+        <div *ngIf="loading" class="lds-ring">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+    <pagination
+      class="pagination-wrapper"
+      *ngIf="notificationList?.count"
+      [boundaryLinks]="true"
+      [totalItems]="notificationList?.count"
+      [rotate]="true" [maxSize]="7"
+      [itemsPerPage]="page_size"
+      [(ngModel)]="current_page"
+      (pageChanged)="pageChanged($event)"
+      previousText="&lsaquo;"
+      nextText="&rsaquo;"
+      firstText="&laquo;"
+      lastText="&raquo;"
+    >
+    </pagination>
+  </div>
+</div>

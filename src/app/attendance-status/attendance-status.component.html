@@ -1,0 +1,52 @@
+<form *ngIf="consult_form" [formGroup]="consult_form">
+  <div class="form-group-horizontal">
+    <div class="form-group-horizontal-params">
+      <div class="form-group-param">
+        <div class="form-group-param-description">
+          Base
+        </div>
+        <div class="form-group-param-field">
+          <ng-select class="select2-custom filter-item" [items]="bases" bindValue="value" formControlName="base" [clearable]="false">
+          </ng-select>
+        </div>
+      </div>
+      <div class="form-group-param">
+        <div class="form-group-param-description">
+          Código de Atendimento
+        </div>
+        <div class="form-group-param-field">
+          <input type="number" class="form-control attendance-code" formControlName="attendance_code" />
+        </div>
+      </div>
+      <div class="form-group-param">
+        <div class="form-group-param-description"></div>
+        <button class="btn-default btn-primary btn-sm"
+        [disabled]="!consult_form?.valid"
+        (click)="consultar()">Consultar</button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="consult-box">
+  <span class="consult-title-box">Resultado da Consulta</span>
+  <div class="consult-box-result">
+    <span class="message error" *ngIf="errorCodigoInvalido">Código de atendimento inválido</span>
+    <span class="message error" *ngIf="errorPacienteNaoAlocado">Gestante não alocada</span>
+    <span class="message error" *ngIf="errorDashNaoParametrizado">A alocação atual da gestante não condiz com o dashboard</span>
+    <span class="message success" *ngIf="successMessage" [innerHTML]="successMessage"></span>
+  </div>
+  <span class="consult-title-box">Sugestão para Solução</span>
+  <div class="consult-box-sugest">
+    <span class="message" [innerHTML]="errorMessage"></span>
+  </div>
+</div>
+
+<div class="overlay" [ngClass]="{'overlay-show': loading}">
+  <div *ngIf="loading" class="lds-ring">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>

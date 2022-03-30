@@ -1,0 +1,59 @@
+<div [id]="'monitoramento' + monitoramento_data?.id" class="patient-box" [ngClass]="{'during-alert': is_firing_alert, 'fade-out': monitoramento_data?.encerrado}">
+  <div class="monitoramento-container">
+    <div class="patient-data-container">
+      <div class="patient-data-row">
+        <div class="monitoring-elapsed-time" *ngIf="!isSenai" [ngClass]="{'limit-time': last_plot?.date - monitoramento_data?.timestamp > MAX_MONITORAMENTO_ELAPSED_TIME}">
+          <i class="fas fa-clock"></i>
+          {{ last_plot ? (last_plot['date'] - monitoramento_data['timestamp'] | monitoramentoDuration) : '-' }}
+        </div>
+        <div class="monitoring-elapsed-time" *ngIf="isSenai" [ngClass]="{'limit-time': monitoringTime > MAX_MONITORAMENTO_ELAPSED_TIME}">
+          <i class="fas fa-clock"></i>
+          {{ monitoringTime ? ( monitoringTime | monitoramentoDuration) : '-' }}
+        </div>
+      </div>
+      <div class="patient-data-row">
+        <div class="patient-data flex-grow-1 text-can-overflow">
+          <div class="d-flex align-items-center" (click)="modalsService.openPatientModal(monitoramento_data?.paciente)">
+            <div class="posto-index">{{local_index}}</div>
+            <div class="patient-value flex-grow-1 clickable" [title]="monitoramento_data?.paciente?.nome">
+              {{monitoramento_data?.paciente?.nome}}
+            </div>
+          </div>
+          <div class="leito small">{{ leito }}</div>
+          <div class="small">{{ (monitoramento_data?.paciente?.data_nascimento | date: 'dd/MM/yyyy') || '-' }}</div>
+        </div>
+      </div>
+      <div class="patient-event-logging-box" [ngClass]="{'no-items': !monitoramento_alerts_periods}">
+        <div class="patient-event" *ngFor="let periodo_alerta of monitoramento_alerts_periods">
+          <span class="event-title {{periodo_alerta?.tipo}}">{{ getAlertDisplay(periodo_alerta?.tipo) }}</span>: {{ periodo_alerta?.data_inicio | date:'HH:mm:ss' }} - {{ (periodo_alerta?.data_fim | date:'HH:mm:ss') || '...' }}
+        </div>
+        <div class="no-alerts-event-logging-box-message" *ngIf="!monitoramento_alerts_periods">
+          Sem alertas no momento
+        </div>
+      </div>
+      <div class="patient-data-row mb-0">
+        <div class="patient-data">
+          <div class="patient-title">
+            Linha de Base
+          </div>
+          <div class="patient-value">
+            {{last_plot?.base_line || '-'}} <span *ngIf="last_plot?.base_line" class="value-unit">(bpm)</span>
+          </div>
+        </div>
+        <div class="patient-data text-right">
+          <div class="patient-title">
+            Batimentos Fetais
+          </div>
+          <div class="patient-value">
+            <span *ngIf="last_plot && last_plot?.value >= 0">
+              {{last_plot?.value}} <span class="value-unit">(bpm)</span>
+            </span>
+            <span *ngIf="!last_plot || last_plot?.value < 0">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-fth-graph #fth_graph class="rt-graph" [is_real_time]="true" [dataset]="plot_data" [has_lost_focus]="has_lost_focus"></app-fth-graph>
+</div>

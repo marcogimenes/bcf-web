@@ -1,0 +1,62 @@
+<div class="content-login">
+  <div class="login">
+    <div class="login__header">
+      <img class="logo" src="assets/images/logo-login.svg">
+    </div>
+    <div class="login__body">
+      <form *ngIf="!authenticatedUser" [formGroup]="loginForm" >
+        <div class="form-group-horizontal fadein">
+
+          <div class="form-group-horizontal-params">
+            <div class="form-group-param">
+              <div class="form-group-param-description">
+                Login
+              </div>
+              <div
+                class="form-group-param-field"
+                [ngClass]="{ error: loginForm.errors }"
+              >
+                <input class="login" formControlName="username" type="text" placeholder="Nome de Usuário" />
+                <span class="unit"><i class="fas fa-user"></i></span>
+              </div>
+            </div>
+            <div class="form-group-param">
+              <div class="form-group-param-description">
+                Senha
+              </div>
+              <div
+                class="form-group-param-field"
+                [ngClass]="{ error: loginForm.errors }"
+              >
+                <input formControlName="password" class="login" type="password" placeholder="Palavra-passe"/>
+                <span class="unit"><i class="fas fa-lock"></i></span>
+              </div>
+            </div>
+            <div class="form-group-param">
+              <div class="form-group-param-description"></div>
+              <div *ngIf="loginForm.errors"
+                class="form-group-horizontal-type__description error mb-3"
+              >
+                * Não foi possível realizar o login com as credenciais fornecidas
+              </div>
+              <div>
+                <button
+                  class="btn-default btn-primary mb-1"
+                  [disabled]="!loginForm.valid"
+                  (click)="login()"
+                >
+                  <i *ngIf="loading_autenticar" class="fas fa-spinner fa-spin mr-2 loading"></i>
+                  {{ loading_autenticar ? 'Autenticando' : 'Autenticar' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <span>Intmed Software {{ version }}</span>
+    </div>
+  </div>
+</div>
+
+
+

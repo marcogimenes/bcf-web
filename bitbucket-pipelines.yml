@@ -1,0 +1,54 @@
+image: node:12.16.1
+
+pipelines:
+  branches:
+    develop:
+      - step:
+          caches:
+            - node
+          script:
+            - npm install
+            - npm run build-aws
+            - ssh ubuntu@18.228.144.220 'rm -rf /home/ubuntu/dockerizing/nginx-angular/app/batimentos-web/*'
+            - scp -r dist/* ubuntu@18.228.144.220:/home/ubuntu/dockerizing/nginx-angular/app/batimentos-web
+
+    develop-4.x.y:
+      - step:
+          caches:
+            - node
+          script:
+            - npm install
+            - npm run build-aws-4rc
+            - cp src/environments/env.aws.4rc.json dist/config/env.json
+            - ssh ubuntu@18.228.144.220 'rm -rf /home/ubuntu/dockerizing/nginx-angular/app/batimentos-web-4rc/*'
+            - scp -r dist/* ubuntu@18.228.144.220:/home/ubuntu/dockerizing/nginx-angular/app/batimentos-web-4rc
+
+  tags:
+    '*':
+      - step:
+          caches:
+            - node
+
+          script:
+            - apt-get update
+            - apt-get install zip -y
+            - npm install
+            - npm run build-hap
+            - cd batimentos-fetais-web && zip -r batimentos-fetais-web.zip *
+
+            - ssh ubuntu@ftp.intmed.com.br sudo mkdir -m 770 -p /home/hapvida/batimentos/frontend/v$BITBUCKET_TAG
+
+            - scp batimentos-fetais-web.zip ubuntu@ftp.intmed.com.br:~/
+            - scp ../src/environments/env.dev.json ubuntu@ftp.intmed.com.br:~/
+            - scp ../src/environments/env.homolog.json ubuntu@ftp.intmed.com.br:~/
+            - scp ../src/environments/env.prod.json ubuntu@ftp.intmed.com.br:~/
+            - scp ../deploy_frontend.sh ubuntu@ftp.intmed.com.br:~/
+
+            - ssh ubuntu@ftp.intmed.com.br sudo mv /home/ubuntu/batimentos-fetais-web.zip /home/hapvida/batimentos/frontend/v$BITBUCKET_TAG/
+            - ssh ubuntu@ftp.intmed.com.br sudo mv /home/ubuntu/env.dev.json /home/hapvida/batimentos/frontend/v$BITBUCKET_TAG/
+            - ssh ubuntu@ftp.intmed.com.br sudo mv /home/ubuntu/env.homolog.json /home/hapvida/batimentos/frontend/v$BITBUCKET_TAG/
+            - ssh ubuntu@ftp.intmed.com.br sudo mv /home/ubuntu/env.prod.json /home/hapvida/batimentos/frontend/v$BITBUCKET_TAG/
+            - ssh ubuntu@ftp.intmed.com.br sudo mv /home/ubuntu/deploy_frontend.sh /home/hapvida/batimentos/frontend/v$BITBUCKET_TAG/
+
+            - ssh ubuntu@ftp.intmed.com.br sudo chown -R hapvida:hapvida /home/hapvida/batimentos/frontend/v$BITBUCKET_TAG/
+            - ssh ubuntu@ftp.intmed.com.br sudo chmod -R 770 /home/hapvida/batimentos/frontend/v$BITBUCKET_TAG/

@@ -1,0 +1,107 @@
+<div class="content content-detail">
+  <div class="patient-box-list">
+    <h5>Histórico de monitoramentos</h5>
+    <form *ngIf="local_settings_form" [formGroup]="local_settings_form">
+      <div class="filter-box">
+        <div class="filter-box__title">Filtros</div>
+        <div class="filter-box__body">
+          <div class="input-group mr-2 filter-item">
+            <input [(ngModel)]="buscaPacienteInput" [ngModelOptions]="{standalone: true}" class="form-control" type="text" name="search" autocomplete="off" placeholder="Nome da paciente ou código do atendimento" />
+            <span *ngIf="pacientes_filter?.q" (click)="clearPacienteName($event)" title="limpar" class="clear-filter-btn"><i class="fas fa-times"></i></span>
+            <div class="input-group-append">
+              <span class="input-group-text"><i class="fa fa-search"></i></span>
+            </div>
+          </div>
+
+          <ng-select
+            class="select2-custom filter-item"
+            [items]="bases"
+            bindValue="value"
+            formControlName="base"
+            [clearable]="false"
+          >
+          </ng-select>
+
+          <ng-select
+            class="select2-custom filter-item"
+            [items]="setores_hosp"
+            [loading]="setores_hosp_loading"
+            formControlName="setor_hosp"
+            placeholder="Setor não selecionado"
+          >
+          </ng-select>
+
+          <ng-select
+            class="select2-custom filter-item"
+            [items]="unidades_atendimento"
+            [loading]="unidades_atendimento_loading"
+            [virtualScroll]="true"
+            formControlName="unidade_atendimento"
+            placeholder="Unidade não selecionada"
+          >
+          </ng-select>
+
+          <ng-select
+            class="select2-custom filter-item"
+            [items]="postos"
+            [loading]="postos_loading"
+            [virtualScroll]="true"
+            formControlName="posto"
+            placeholder="Posto não selecionado"
+          >
+          </ng-select>
+
+          <button class="button button__primary filter-item" (click)="filtrar()">Filtrar</button>
+        </div>
+      </div>
+    </form>
+      <table class="patient-table-list" *ngIf="patient_list?.count" >
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Código do Atendimento</th>
+            <th>Unidade</th>
+            <th>Posto</th>
+            <th>Último monitoramento</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let patient of patient_list?.results" (click)="modalsService.openPatientModal(patient)">
+            <td>{{patient?.nome}}</td>
+            <td>{{patient?.codigo_atendimento || '-'}}</td>
+            <td>{{patient?.last_monitoramento?.nome_filial || '-'}}</td>
+            <td>{{patient?.last_monitoramento?.nome_posto || '-'}}</td>
+            <td>{{(patient?.last_monitoramento?.timestamp | date: 'dd/MM/yyyy - HH:mm') || '-'}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+    <span class="no-list-items-message" *ngIf="!patient_list?.count && !loading">Não há pacientes para os filtros informados</span>
+
+    <pagination
+      class="pagination-wrapper"
+      [boundaryLinks]="true"
+      [totalItems]="patient_list?.count"
+      [rotate]="true"
+      [maxSize]="7"
+      [itemsPerPage]="page_size"
+      [(ngModel)]="current_page"
+      (pageChanged)="pageChanged($event)"
+      previousText="&lsaquo;"
+      nextText="&rsaquo;"
+      firstText="&laquo;"
+      lastText="&raquo;"
+    >
+    </pagination>
+
+
+    <div class="overlay" [ngClass]="{'overlay-show': loading}">
+      <div *ngIf="loading" class="lds-ring">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</div>

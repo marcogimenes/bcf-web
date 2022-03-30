@@ -1,0 +1,51 @@
+$primary-color: #0064A9;
+$primary-color-dark: #004A7B;
+$secondary-color: #6C757D;
+$title-color: #606367;
+$default-font-color: #4F4F4F;
+$disabled-color:  #4F4F4F;
+$btn-default-color: #999;
+
+$desaceleracao-color: #E55934;
+$taquicardia-color: #E4AE20;
+$bradicardia-color: #8E19D6;
+$ausencia-aceleracao-transitoria: #9BC53D;
+
+$bg-color: #F9F9F9;
+$bg-color-sala-controle: #EFEFEF;
+$custom-notification-bg-color: rgba(7, 7, 7, 0.75);
+$overlay-color: rgba(0, 0, 0, .2);
+
+$lost-focus-message-color: #EC6A5E;
+$pending-alert-color: #EC6A5E;
+$pending-alert-color-hover: #CE5C52;
+$pending-alert-color-active: #B54B4B;
+$pending-alert-header-bg-color: #EB5757;
+
+$box-title-color: rgba(0, 0, 0, 0.4);
+$box-value-color: #4F4F4F;
+
+$success-color: $ausencia-aceleracao-transitoria;
+$background-success-color: #F1F7E4;
+$success-color-dark: darken($success-color, 10%);
+
+$error-color: $pending-alert-color-hover;
+$background-error-color: #FAEEED;
+$error-color-dark: darken($error-color, 10%);
+
+$background-primary-color: #CDE8F8;
+
+$white-color: #FFFFFF;
+$gray-color: #C4C4C4;
+
+$time-late-color: #F65B4D;
+$time-ok-color: #32A91F;
+$time-tolerance-color: #DF921D;
+
+$progress-color-late: #F65B4D;
+$progress-color-torance: #DF921D;
+$progress-color-on-time: #32A91F;
+
+$time-late-color: #F65B4D;
+$time-ok-color: #32A91F;
+$time-tolerance-color: #DF921D;

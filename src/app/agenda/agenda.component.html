@@ -1,0 +1,59 @@
+<div class="agenda">
+  <div class="clock-wrapper">
+    <div class="clock">
+      <div class="time">
+        <span>{{time | date: 'dd/MM/yyyy'}}</span>
+        <span class="digital-number">{{time | date: 'HH:mm:ss'}}</span>
+      </div>
+      <i class="fas fa-clock"></i>
+    </div>
+  </div>
+  <div class="registros-agenda-list" [ngClass]="{'empty-list': !registrosAgendaList?.length}">
+    <ul *ngIf="registrosAgendaList?.length">
+      <li *ngFor="let registro of registrosAgendaList" [ngClass]="(registro?.data_prevista_inicio && showStatus(registro)) && {'late': registro?.status == 'late', 'on-time': registro?.status == 'on-time', 'on-tolerance': registro?.status == 'on-tolerance'}">
+        <ng-container *ngIf="registro?.data_prevista_inicio; else sem_agenda">
+          <div class="registro-name-field py-1">
+            <span class="posto-index">{{registro?.index_posto}}</span>
+            <span class="registro-name" [ngClass]="{'bold': registro?.is_primeiro_registro}" [title]="registro?.nome_paciente">{{registro?.nome_paciente}}</span>
+          </div>
+          <div class="d-flex pb-1">
+            <b class="entrada-label" title="Próximo Monitoramento">Próx. Monit.:&nbsp;</b>{{(registro?.data_prevista_inicio | date: 'HH:mm:ss - dd/MM/yyyy')}}
+          </div>
+          <div class="d-flex justify-content-between d-flex pb-1">
+            <div>
+              <b class="entrada-label" title="Código de Atendimento">Cód.:&nbsp;</b><span>{{registro?.codigo_atendimento}}</span> |
+              <b class="entrada-label" title="Data de Nascimento">Nasc.:&nbsp;</b><span>{{registro?.data_nascimento | date: 'dd/MM/yyyy'}}</span>
+            </div>
+            <div class="how-long" *ngIf="registro?.status">
+              <i class="far fa-clock mr-1"></i>{{ timer(registro) }}
+            </div>
+          </div>
+          <div class="d-flex pb-1">
+            <b class="entrada-label" title="Leito">Leito:&nbsp;</b>{{ registro?.leito }}
+          </div>
+        </ng-container>
+        <ng-template #sem_agenda>
+          <div class="registro-name-field py-1">
+            <span class="posto-index">{{registro?.index_posto}}</span>
+            <span class="registro-name" [title]="registro?.nome_paciente">{{registro?.nome_paciente}}</span>
+          </div>
+          <div class="d-flex pb-1">
+            <b class="entrada-label" title="Entrada">Entrada:&nbsp;</b>{{(registro?.data_alocacao | date: 'dd/MM/yyyy - HH:mm ')}}
+          </div>
+          <div class="d-flex justify-content-between d-flex pb-1">
+            <div>
+              <b class="entrada-label" title="Código de Atendimento">Cód.:&nbsp;</b><span>{{registro?.codigo_atendimento}}</span> |
+              <b class="entrada-label" title="Data de Nascimento">Nasc.:&nbsp;</b><span>{{registro?.data_nascimento | date: 'dd/MM/yyyy'}}</span>
+            </div>
+          </div>
+          <div class="d-flex pb-1">
+            <b class="entrada-label" title="leito">Leito:&nbsp;</b>{{ registro?.leito }}
+          </div>
+        </ng-template>
+      </li>
+    </ul>
+    <div *ngIf="!registrosAgendaList?.length" class="no-registros-message">
+      Não há monitoramentos agendados
+    </div>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+<div #wrapper class="wrapper" [ngClass]="{ 'scrollable-x': !is_real_time }">
+  <canvas #maingraph class="maingraph"></canvas>
+  <!-- <canvas #interationgraph class="interationgraph"></canvas> -->
+  <div #label_x_wrapper class="label-x-wrapper">
+    <ng-container *ngFor="let data of dataset_labels">
+      <span class="label-x" [ngStyle]="{ 'transform': 'translateX('+ data.x +'px)' }">
+        <!-- <svg width="4" height="11" viewBox="0 0 4 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 11V1.5L3 4" stroke="rgba(0, 0, 0, .8)"/>
+        </svg> -->
+        <!-- &#8870; -->
+        {{ data.date | date: 'HH:mm:ss' }}
+      </span>
+    </ng-container>
+  </div>
+  <div
+    class="lost-focus-message"
+    [ngClass]="{ show: has_lost_focus, search: !changeDevicePosition }"
+  >
+    <i *ngIf="changeDevicePosition" class="fas fa-exclamation-triangle"></i>
+    <span *ngIf="!changeDevicePosition">
+      Aguarde, buscando foco...
+    </span>
+    <span *ngIf="changeDevicePosition">
+      Foco não recuperado.<br>Por favor, reposicione o dispositivo.
+    </span>
+  </div>
+</div>

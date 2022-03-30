@@ -1,0 +1,220 @@
+<div class="content content-detail audit-report">
+  <div class="default-box">
+    <div class="default-box__header">
+      <h5>Relatórios de Auditoria</h5>
+      <form *ngIf="!authenticatedUser" [formGroup]="loginForm" >
+        <div class="form-group-horizontal fadein">
+          <div
+            *ngIf="loginForm.errors"
+            class="form-group-horizontal-type__description error"
+          >
+            * Não foi possível realizar o login com as credenciais fornecidas
+          </div>
+          <div class="form-group-horizontal-params">
+            <div class="form-group-param">
+              <div class="form-group-param-description">
+                Login
+              </div>
+              <div
+                class="form-group-param-field"
+                [ngClass]="{ error: loginForm.errors }"
+              >
+                <input class="login" formControlName="username" type="text" placeholder="Nome de Usuário" />
+                <span class="unit"><i class="fas fa-user"></i></span>
+              </div>
+            </div>
+            <div class="form-group-param">
+              <div class="form-group-param-description">
+                Senha
+              </div>
+              <div
+                class="form-group-param-field"
+                [ngClass]="{ error: loginForm.errors }"
+              >
+                <input formControlName="password" class="login" type="password" placeholder="Palavra-passe"/>
+                <span class="unit"><i class="fas fa-lock"></i></span>
+              </div>
+            </div>
+            <div class="form-group-param">
+              <div class="form-group-param-description"></div>
+              <div>
+                <button
+                  class="btn-default btn-primary mb-1"
+                  [disabled]="!loginForm.valid"
+                  (click)="login()"
+                >
+                  <i *ngIf="loading_autenticar" class="fas fa-spinner fa-spin mr-2 loading"></i>
+                  {{ loading_autenticar ? 'Autenticando' : 'Autenticar' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- Usuário logado-->
+      <div *ngIf="authenticatedUser" class="auth-box fadein">
+        <div class="title">Autenticação</div>
+        <div class="form">
+          <span
+            >Bem vindo
+            <b>{{
+              authenticatedUser.first_name
+                ? authenticatedUser.first_name
+                : authenticatedUser.username
+            }}</b></span
+          >
+          <button class="btn-default btn-primary-outline px-4" (click)="logout()">
+            Sair
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="show_filters" class="fadein-content">
+        <div class="filter-box__body">
+          <div class="filter-item mr-4 mt-3">
+            <h6>Selecione o relatório</h6>
+            <ng-select
+              class="select2-custom select2-audit-type"
+              [items]="auditList"
+              [(ngModel)]="auditType"
+              bindValue="value"
+              [clearable]="false"
+              (change)="onChangeAuditType()"
+            >
+            </ng-select>
+          </div>
+          <div class="filter-item ml-3">
+            <button
+              class="btn-default btn-primary mt-4"
+              (click)="generatePdf()"
+              [disabled]="!report_form.valid || !authenticatedUser"
+            >
+              <i class="fas fa-print mr-2"></i>
+              Gerar Relatório
+            </button>
+          </div>
+        </div>
+
+        <form *ngIf="report_form" [formGroup]="report_form">
+          <div class="filter-box">
+            <!-- <div class="filter-box__title">Filtros</div> -->
+            <div class="filter-box__body">
+              <div class="filter-item">
+                <span>Informe um periodo:</span>
+                <input
+                  bsDaterangepicker
+                  type="text"
+                  placeholder="Selecione um intervalo"
+                  class="form-control datepicker"
+                  formControlName="date_range"
+                  [bsConfig]="{
+                    adaptivePosition: true,
+                    containerClass: 'theme-dark-blue',
+                    rangeInputFormat: 'DD/MM/YYYY',
+                    showWeekNumbers: false
+                  }"
+                />
+              </div>
+
+              <div class="filter-item">
+                <span>Base:</span>
+                <ng-select
+                  class="select2-custom"
+                  [items]="bases"
+                  bindValue="value"
+                  formControlName="base"
+                  [clearable]="false"
+                ></ng-select>
+              </div>
+              <div class="filter-item">
+                <span>Unidade:</span>
+                <ng-select
+                  class="select2-custom unidade"
+                  [items]="unidades_atendimento"
+                  formControlName="unidade_atendimento"
+                  placeholder="Todas as unidades"
+                  [loading]="loading_map['unidades_atendimento']"
+                  notFoundText="Não há itens"
+                >
+                </ng-select>
+            </div>
+              <ng-container *ngIf="auditType === 'MONITORAMENTOS'">
+                <div class="filter-item">
+                  <span>Convenio:</span>
+
+                <ng-select
+                  class="select2-custom"
+                  [items]="convenios"
+                  formControlName="convenio"
+                  placeholder="Todos os convênios"
+                  [loading]="loading_map['convenios']"
+                  notFoundText="Não há itens"
+                >
+                </ng-select>
+              </div>
+              </ng-container>
+              <ng-container *ngIf="auditType === 'PARTOS' || auditType === 'ACOMPANHAMENTOS_TABELA' || auditType === 'ACOMPANHAMENTOS_GRAFICO' || auditType === 'ELEGIVEIS' || auditType === 'ACOMPANHAMENTOS_TABELA_ASSIDUIDADE' || auditType == 'TABELA_PARTOS_CSV'">
+                <div class="filter-item">
+                  <span>Motivo:</span>
+
+                <ng-select
+                  class="select2-custom"
+                  [items]="motivosAtendimento"
+                  bindValue="value"
+                  formControlName="motivoAtendimento"
+                  [clearable]="false"
+                ></ng-select>
+              </div>
+              </ng-container>
+              <ng-container *ngIf="auditType === 'PARTOS' || auditType === 'MONITORAMENTOS' || auditType == 'ACOMPANHAMENTOS_GRAFICO' || auditType === 'ACOMPANHAMENTOS_TABELA' || auditType === 'ACOMPANHAMENTOS_TABELA_ASSIDUIDADE' || auditType == 'TABELA_PARTOS_CSV'">
+                <div class="filter-item">
+                  <span>Zerados:</span>
+                  <ng-select
+                    class="select2-custom"
+                    [items]="monitoramentos_zerados_items"
+                    bindValue="value"
+                    formControlName="monitoramento_zerado"
+                    [clearable]="false"
+                  ></ng-select>
+              </div>
+              </ng-container>
+              <ng-container *ngIf="auditType === 'PARTOS' || auditType === 'ELEGIVEIS'">
+                <div class="filter-item">
+                  <span>Código Carteira:</span>
+
+                <input
+                  type="text"
+                  class="form-control texto"
+                  formControlName="codigo_carteira"
+                />
+              </div>
+              </ng-container>
+              <ng-container *ngIf="auditType === 'PARTOS' || auditType === 'ELEGIVEIS'">
+                <div class="filter-item">
+                  <span>Nome paciente:</span>
+                  <input
+                    type="text"
+                    class="form-control texto"
+                    formControlName="nome_paciente"
+                  />
+              </div>
+              </ng-container>
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- select audit type -->
+
+    </div>
+  </div>
+</div>
+
+<div class="overlay" [ngClass]="{ 'overlay-show': loading }">
+  <div *ngIf="loading" class="lds-ring">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>

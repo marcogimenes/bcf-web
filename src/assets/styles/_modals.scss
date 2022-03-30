@@ -1,0 +1,12 @@
+@media (max-width: 1200px) {
+  .modal-dialog {
+    max-width: unset;
+    margin: 0.5rem;
+  }
+}
+
+@media (min-width: 1600px) {
+  .modal-xl {
+    max-width: 1560px;
+  }
+}

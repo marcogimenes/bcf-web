@@ -1,0 +1,19 @@
+<div class="content realtime-panel">
+  <app-agenda class="agenda-wrapper"></app-agenda>
+  <div class="box-realtime-wrapper" [ngClass]="{'no-items': !monitoramentos.length}">
+    <app-monitoramento-box-realtime-chart
+    [id]="monitoramento?.id"
+    class="patient-box-wrapper"
+    [ngClass]="{'fade-out': monitoramento?.encerrado}"
+    (monitoramentoEncerrado)="removeMonitoramento($event)"
+    *ngFor="let monitoramento of monitoramentos; trackBy: trackMonitoramentoElement"
+    [monitoramento_data]="monitoramento"
+    [monitoramento_piece_plot_data]="monitoramentos_datasets[monitoramento.id]"
+    [monitoramento_alerts]="monitoramentos_alerts[monitoramento.id]"
+    [monitoramento_alerts_periods]="monitoramentos_alerts_periods[monitoramento.id]">
+    </app-monitoramento-box-realtime-chart>
+
+    <div class="no-items-message" *ngIf="!monitoramentos.length"> Nenhuma paciente em monitoramento </div>
+  </div>
+</div>
+<app-places-list></app-places-list>

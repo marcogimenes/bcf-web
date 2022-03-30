@@ -1,0 +1,60 @@
+<header class="header" *ngIf="dashboardSalaControle !== 'hidden'">
+  <div
+    class="header-container"
+    [ngClass]="{ 'header-pending-alerts': 'periodos_alertas_pendentes_counting', 'header-container__sala-controle': dashboardSalaControle  }"
+  >
+    <a class="header-title" [routerLink]="!dashboardSalaControle ? ['']: []">
+      <img class="logo" src="assets/images/logo.svg">
+      <span class="version">{{ version }}</span></a
+    >
+    <ng-container *ngIf="dashboardSalaControle">
+      <span>Dashboard da Sala de Controle</span>
+      <div class="btn-group dropdown " dropdown>
+        <label id="button-basic" dropdownToggle type="button"
+                aria-controls="dropdown-basic">
+          <b>{{user}}</b> <i class="fas fa-caret-down ml-2"></i>
+        </label>
+        <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+            role="menu" aria-labelledby="button-basic">
+          <li role="menuitem">
+            <a class="dropdown-item" (click)="logout()">
+              <img class="logo" src="assets/images/Signout.svg" class="mr-2">
+              <span>Sair do sistema</span>
+            </a>
+          </li>
+          <li role="menuitem">
+            <span class="dropdown-item rotulo">Intmed Software {{ version }}</span>
+          </li>
+        </ul>
+      </div>
+    </ng-container>
+
+    <span class="header-navigation" *ngIf="!dashboardSalaControle">
+      <a class="btn-header" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <span>Tempo Real</span>
+      </a>
+      <a class="btn-header" routerLink="/pacientes" routerLinkActive="active">
+        <span>Histórico</span>
+      </a>
+      <a class="btn-header" routerLink="/relatorios" routerLinkActive="active">
+        <span>Relatórios</span>
+      </a>
+      <a class="btn-header" routerLink="/consulta" routerLinkActive="active">
+        <span>Consulta</span>
+      </a>
+      <a class="btn-header" routerLink="/configuracoes" routerLinkActive="active">
+        <span>Configurações</span>
+      </a>
+      <a class="btn-header"[ngClass]="{'btn-pending-alerts': periodos_alertas_pendentes_counting}" routerLink="/alertas" routerLinkActive="active">
+        Alertas
+        <span class="alerta-badge" *ngIf="periodos_alertas_pendentes_counting">{{periodos_alertas_pendentes_counting}}</span>
+      </a>
+      <a class="btn-header" routerLink="/notificacoes" routerLinkActive="active">
+        <span class="btn-header-notificacao">
+          Notificações
+          <span class="notificacao-badge" *ngIf="has_unread_notification"></span>
+        </span>
+      </a>
+    </span>
+  </div>
+</header>

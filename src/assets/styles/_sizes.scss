@@ -1,0 +1,20 @@
+$header-height: 50px;
+$places-list-height: 40px;
+$content-height: calc(100vh - #{$header-height});
+$content-height-realtime: calc(100vh - #{$header-height} - #{$places-list-height});
+$content-boxes-cards: calc(100vh - 146px);
+
+// $patient-box-width: calc(41.5vw - 15px - 2px);
+
+// Firefox 43 doesn't accept cascade calc calls
+// $patient-box-height: calc((100vh - #{$header-height} - #{$places-list-height} - 16px) / 3 - 10px - 2px);
+
+$patient-box-width: 49.5%;
+$patient-box-height: calc(33% - 0.5rem);
+
+$patient-box-data-container-width: 35%;
+$patient-box-graph-width: 65%;
+
+$settings-header-height: 50px;
+
+$table-dashboard-control-room: 75vh;

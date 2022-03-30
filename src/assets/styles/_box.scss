@@ -1,0 +1,95 @@
+.default-box {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+
+  &.dashboard-sala-controle {
+    background-color: #EFEFEF;
+    padding-bottom: 0;
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    font-family: 'Lato';
+
+    &--title {
+      font-size: 20pt;
+      border-bottom: 1px solid #D2D0D2;
+    }
+
+    &--subtitle {
+      font-size: 10pt;
+      font-weight: bold;
+    }
+
+    .filter-box {
+      display: flex;
+      flex-direction: column;
+      padding: 0px;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    .filter-box {
+      display: flex;
+      flex-direction: column;
+      padding: 0px;
+      &__row{
+        display: flex;
+        flex-grow: 1;
+      }
+      &__item {
+        display: flex;
+        flex-direction: column;
+        margin-right: 1rem;
+        width: 200px;
+        margin-bottom: .3rem
+      }
+      &__button {
+        border-radius: 0.5rem
+      }
+    }
+
+    &--list {
+      width: 100%;
+      margin-top: 10px;
+      thead {
+        font-size: 0.75rem;
+      }
+      tbody {
+        font-size: 0.85rem;
+        tr {
+          &:nth-child(even) {
+            background-color: rgba(0, 110, 182, 0.05);
+          }
+          &.detalhes-table{
+            background-color: #fff;
+          }
+
+        }
+
+        td {
+          &.action {
+            color: $primary-color;
+            cursor: pointer;
+          }
+        }
+      }
+      tbody, thead {
+        th, td {
+          padding: 7px 0;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+<div class="places">
+  <span class="text-place">
+    Locais Assistidos:
+  </span>
+  <span class="places-container">
+    <span class="place-box" *ngFor="let local of locais; let i=index">
+      <span class="place-circle">
+          {{i | sumIndex: 1}}
+      </span>
+      <span class="place-information" title="{{local?.unidade_atendimento?.cd_filial}} | {{local?.posto?.value}}">
+        {{local?.unidade_atendimento?.nm_filial || local?.unidade_atendimento?.label}} | {{local?.posto?.label}}
+      </span>
+    </span>
+  </span>
+</div>
+
+

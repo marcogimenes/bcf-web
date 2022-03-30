@@ -1,0 +1,19 @@
+<div class="content content-detail">
+  <div class="sidebar-menu">
+    <div class="sidebar-menu-body">
+      <div class="sidebar-menu-list">
+        <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="fas fa-chart-bar"></i>
+          <span>Resumo</span>
+        </a>
+        <a routerLink="/dashboard/detalhes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }"><i class="fas fa-file-alt"></i>
+          <span>Relatório</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="default-box dashboard-sala-controle">
+    <div class="default-box__body overflow-hidden">
+      <router-outlet class="d-none"></router-outlet>
+    </div>
+  </div>
+</div>

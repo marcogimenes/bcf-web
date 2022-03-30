@@ -1,0 +1,18 @@
+.button {
+    background-color: white;
+    border-width: 1px;
+    border-style: solid;
+    border-color: $secondary-color;
+    color: $secondary-color;
+    cursor: pointer;
+    padding: 4px 25px 4px 25px;
+    &__primary {
+        border-color: $primary-color;
+        color: $primary-color;
+    }
+    &:disabled {
+        border-color: $btn-default-color !important;
+        color: $btn-default-color !important;
+        cursor: default !important;
+    }
+}
